@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">StarWars</string>
+    <string name="dev_list_header">Bluetooth Devices</string>
+    <string name="action_setting">Setting</string>
+</resources>
