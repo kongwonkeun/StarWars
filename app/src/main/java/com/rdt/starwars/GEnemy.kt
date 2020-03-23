@@ -17,6 +17,8 @@ class GEnemy(val GAME: GView, val row: Int, val col: Int) {
     var h = 0
     var x = 0
     var y = 0
+    var pos_x = 0
+    var pos_y = 0
 
     private var img_pool = arrayOfNulls<Bitmap>(16)
     private val rnd = Random
@@ -25,8 +27,6 @@ class GEnemy(val GAME: GView, val row: Int, val col: Int) {
     private var dx = 0f
     private var dy = 0f
     private var cur_x = 0
-    private var pos_x = 0
-    private var pos_y = 0
     private var att_id = 0
     private var path_id = 0
     private var path_n = 0

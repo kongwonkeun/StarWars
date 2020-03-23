@@ -23,6 +23,7 @@ class GView(context: Context, attributeSet: AttributeSet): SurfaceView(context, 
     var delay = 15
     var stage_num = 1
     var status = GGameStatus.START
+    var killed_boss = 0
 
     lateinit var stage: GStage
     lateinit var enemy_attack: GEnemyAttack
@@ -141,10 +142,23 @@ class GView(context: Context, attributeSet: AttributeSet): SurfaceView(context, 
         }
         m_width = width
         m_height = height
+        img_bg = Bitmap.createScaledBitmap(img_bg, width, height, true)
+        gunship.x = width/2
+        gunship.y = height - GConfig.GUNSHIP_Y
+        if (is_boss) {
+            boss.x = width/2
+        }
+        for (i in GConfig.ENEMY_ROW - 1 downTo 0) {
+            for (j in GConfig.ENEMY_COLUMN - 1 downTo 0) {
+                if (enemy[i][j]!!.dead) {
+                    continue
+                }
+                enemy[i][j]!!.pos_x = width/2 + (j - GConfig.ENEMY_COLUMN/2)*GConfig.ENEMY_WIDTH
+            }
+        }
     }
     override fun surfaceDestroyed(holder: SurfaceHolder?) {
         quit()
-        player.stop()
     }
 
     //
@@ -180,9 +194,15 @@ class GView(context: Context, attributeSet: AttributeSet): SurfaceView(context, 
 
     fun quit() {
         m_thread.stop_thread()
-        //
-        // TODO
-        //
+        player.stop()
+    }
+
+    fun end() {
+        Log.d("tag", "---- 1111 ----")
+        (m_ctx as ActMain).runOnUiThread {
+            Log.d("tag", "---- 2222 ----")
+            (m_ctx as ActMain).finish()
+        }
     }
 
     //
@@ -240,6 +260,11 @@ class GView(context: Context, attributeSet: AttributeSet): SurfaceView(context, 
         return false
     }
 
+    override fun onDetachedFromWindow() {
+        m_thread.stop_thread()
+        super.onDetachedFromWindow()
+    }
+
     //
     //
     //
@@ -268,7 +293,7 @@ class GView(context: Context, attributeSet: AttributeSet): SurfaceView(context, 
         override fun run() {
 
             while (running) {
-                val canvas = m_holder.lockCanvas()
+                val canvas = m_holder.lockCanvas() ?: continue
                 try {
                     synchronized(m_holder) {
                         when (status) {
@@ -323,10 +348,64 @@ class GView(context: Context, attributeSet: AttributeSet): SurfaceView(context, 
                 return
             }
             if (is_double) {
-                gunship_missile.add(GGunShipMissile(GAME, gunship.x - 18, gunship.y))
-                gunship_missile.add(GGunShipMissile(GAME, gunship.x + 18, gunship.y))
+                gunship_missile.add(GGunShipMissile(GAME, gunship.x - 40, gunship.y))
+                gunship_missile.add(GGunShipMissile(GAME, gunship.x + 40, gunship.y))
             } else {
                 gunship_missile.add(GGunShipMissile(GAME, gunship.x, gunship.y))
+            }
+            if (!is_auto_fire) {
+                gunship.dir = GShip.STOP.i
+            }
+            loop = 0
+
+            if (is_sound) {
+                sound_pool.play(sound_fire, 1f, 1f, 9, 0, 1f)
+            }
+        }
+
+        fun fire_3() {
+            if (loop < delay || gunship.dead) {
+                return
+            }
+            if (is_double) {
+                gunship_missile.add(GGunShipMissile(GAME, gunship.x, gunship.y))
+                gunship_missile.add(GGunShipMissile(GAME, gunship.x - 40, gunship.y))
+                gunship_missile.add(GGunShipMissile(GAME, gunship.x + 40, gunship.y))
+                gunship_missile.add(GGunShipMissile(GAME, gunship.x - 80, gunship.y))
+                gunship_missile.add(GGunShipMissile(GAME, gunship.x + 80, gunship.y))
+            } else {
+                gunship_missile.add(GGunShipMissile(GAME, gunship.x, gunship.y))
+                gunship_missile.add(GGunShipMissile(GAME, gunship.x - 40, gunship.y))
+                gunship_missile.add(GGunShipMissile(GAME, gunship.x + 40, gunship.y))
+            }
+            if (!is_auto_fire) {
+                gunship.dir = GShip.STOP.i
+            }
+            loop = 0
+
+            if (is_sound) {
+                sound_pool.play(sound_fire, 1f, 1f, 9, 0, 1f)
+            }
+        }
+
+        fun fire_5() {
+            if (loop < delay || gunship.dead) {
+                return
+            }
+            if (is_double) {
+                gunship_missile.add(GGunShipMissile(GAME, gunship.x, gunship.y))
+                gunship_missile.add(GGunShipMissile(GAME, gunship.x - 18, gunship.y))
+                gunship_missile.add(GGunShipMissile(GAME, gunship.x + 18, gunship.y))
+                gunship_missile.add(GGunShipMissile(GAME, gunship.x - 36, gunship.y))
+                gunship_missile.add(GGunShipMissile(GAME, gunship.x + 36, gunship.y))
+                gunship_missile.add(GGunShipMissile(GAME, gunship.x - 54, gunship.y))
+                gunship_missile.add(GGunShipMissile(GAME, gunship.x + 54, gunship.y))
+            } else {
+                gunship_missile.add(GGunShipMissile(GAME, gunship.x, gunship.y))
+                gunship_missile.add(GGunShipMissile(GAME, gunship.x - 18, gunship.y))
+                gunship_missile.add(GGunShipMissile(GAME, gunship.x + 18, gunship.y))
+                gunship_missile.add(GGunShipMissile(GAME, gunship.x - 36, gunship.y))
+                gunship_missile.add(GGunShipMissile(GAME, gunship.x + 36, gunship.y))
             }
             if (!is_auto_fire) {
                 gunship.dir = GShip.STOP.i
@@ -379,30 +458,22 @@ class GView(context: Context, attributeSet: AttributeSet): SurfaceView(context, 
         }
 
         fun draw_score(canvas: Canvas) {
-            val x = gunship.undead_time/2
-            val y = 30
-            val x1 = 134
-            val x2 = x1 + gunship.shield*8 + 4
-
+            val u = gunship.undead_time/2
             for (i in 0 until ship) {
-                canvas.drawBitmap(img_miniship, (i*20 + 10).toFloat(), (y - 15).toFloat(), null)
+                canvas.drawBitmap(img_miniship, (10 + i*20).toFloat(), 15f, null)
             }
-            canvas.drawText("HP", 100f, y.toFloat(), paint)
+            canvas.drawText("HP: ", 10f, 75f, paint)
             paint.color = 0xFF00A0F0.toInt()
             for (i in 0 until gunship.shield) {
-                canvas.drawRect(
-                    (i*8 + x1).toFloat(),
-                    (y - 10).toFloat(),
-                    (i*8 + 6).toFloat(),
-                    (y - 4).toFloat(),
-                    paint
-                )
+                canvas.drawRect((i*8 + 50).toFloat(), 65f, (i*8 + 56).toFloat(), 70f, paint)
             }
-            paint.color = Color.RED
-            canvas.drawRect(x2.toFloat(), (y - 10).toFloat(), (x2 + x).toFloat(), (y - 4).toFloat(), paint)
             paint.color = Color.WHITE
-            canvas.drawText("Score $score", 200f, y.toFloat(), paint)
-            canvas.drawText("Stage $stage_num", 400f, y.toFloat(), paint)
+            canvas.drawText("UNDEAD TIME: ", 10f, 100f, paint)
+            paint.color = Color.RED
+            canvas.drawRect(150f, 90f, (150 + u).toFloat(), 95f, paint)
+            paint.color = Color.WHITE
+            canvas.drawText("SCORE: $score", 10f, 125f, paint)
+            canvas.drawText("STAGE: $stage_num", 10f, 150f, paint)
         }
 
         fun draw_all(canvas: Canvas) {
@@ -447,6 +518,7 @@ class GView(context: Context, attributeSet: AttributeSet): SurfaceView(context, 
                 canvas.drawBitmap(e.img, (e.x - e.w).toFloat(), (e.y - e.h).toFloat(), null)
             }
             draw_score(canvas)
+            gunship.check_clear()
         }
 
         fun stop_thread() {
@@ -454,6 +526,10 @@ class GView(context: Context, attributeSet: AttributeSet): SurfaceView(context, 
             synchronized(lock) {
                 lock.notify()
             }
+        }
+
+        fun stop_me_() {
+            running = false
         }
 
         fun pause_and_resume(wait_: Boolean) {

@@ -12,8 +12,8 @@ class GOver(val GAME: GView) {
     private val img_again = BitmapFactory.decodeResource(GAME.m_ctx.resources, R.drawable.msg_again)
     private val img_yes   = BitmapFactory.decodeResource(GAME.m_ctx.resources, R.drawable.btn_yes)
     private val img_no    = BitmapFactory.decodeResource(GAME.m_ctx.resources, R.drawable.btn_no)
-    private val rect_yes: Rect
-    private val rect_no: Rect
+    private var rect_yes: Rect
+    private var rect_no: Rect
 
     private var w1 = 0
     private val y1 = 260
@@ -21,13 +21,13 @@ class GOver(val GAME: GView) {
 
     private val w2 = img_again.width
     private val y2 = 550
-    private val x2 = (GAME.m_width - w2)/2
+    private var x2 = (GAME.m_width - w2)/2
 
     private val wb  = img_yes.width
     private val hb  = img_yes.height
     private val yb  = 630
-    private val xb1 = 100
-    private val xb2 = GAME.m_width - 100 - wb
+    private var xb1 = 100
+    private var xb2 = GAME.m_width - 100 - wb
 
     private var state = GInput.WAITING
     private var loop = 0
@@ -46,12 +46,18 @@ class GOver(val GAME: GView) {
             GGameStatus.ALL_CLEAR -> { w1 = img_congrats.width }
             else -> {}
         }
+
         x1 = (GAME.m_width - w1)/2
+        x2 = (GAME.m_width - w2)/2
+        xb1 = GAME.m_width/2 - 100 - wb
+        xb2 = GAME.m_width/2 + 100
 
         when (state) {
             GInput.WAITING -> draw(canvas)
             GInput.TOUCH_YES -> restart()
-            GInput.TOUCH_NO -> quit()
+            GInput.TOUCH_NO -> {
+                //quit()
+            }
             else -> {}
         }
     }
@@ -62,6 +68,7 @@ class GOver(val GAME: GView) {
         }
         if (rect_no.contains(x, y)) {
             state = GInput.TOUCH_NO
+            GAME.end()
         }
         return true
     }
@@ -86,6 +93,8 @@ class GOver(val GAME: GView) {
         canvas.drawBitmap(img_again, x2.toFloat(), y2.toFloat(), null)
         canvas.drawBitmap(img_yes, xb1.toFloat(), yb.toFloat(), null)
         canvas.drawBitmap(img_no, xb2.toFloat(), yb.toFloat(), null)
+        rect_yes = Rect(xb1, yb, xb1 + wb, yb + hb)
+        rect_no  = Rect(xb2, yb, xb2 + wb, yb + hb)
     }
 
     private fun restart() {
@@ -107,7 +116,7 @@ class GOver(val GAME: GView) {
     }
 
     private fun quit() {
-        GAME.quit()
+        GAME.m_thread.stop_me_()
     }
 
 }

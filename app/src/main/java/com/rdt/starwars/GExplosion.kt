@@ -73,7 +73,10 @@ class GExplosion(val GAME: GView, var x: Int, var y: Int, private val type: Int)
         when (type) {
             ExpType.SMALL.i -> { return true }
             ExpType.GUNSHIP.i -> { return reset_gunship() }
-            else -> { return check_clear() }
+            else -> {
+                //return check_clear()
+                return true
+            }
         }
     }
 
@@ -90,30 +93,6 @@ class GExplosion(val GAME: GView, var x: Int, var y: Int, private val type: Int)
             GAME.gunship.y = -80
             GAME.status = GGameStatus.END
         }
-        return true
-    }
-
-    fun check_clear(): Boolean {
-        if (GAME.stage.enemy_cnt > 0 || GAME.exp.size > 1) {
-            val a = GAME.stage.enemy_cnt
-            val b = GAME.exp.size
-            return true
-        }
-        if (GAME.stage_num % GConfig.BOSS_COUNT > 0) {
-            GAME.status = GGameStatus.STAGE_CLEAR
-            return true
-        }
-        if (GAME.boss.shield[GBossPart.CENTER.i] > 0) {
-            return true
-        }
-        if (GAME.boss.shield[GBossPart.CENTER.i] < 0) {
-            GAME.boss.y = -60
-            GAME.boss.shield[GBossPart.CENTER.i] = 0
-            GAME.is_boss = false
-            GAME.status = GGameStatus.STAGE_CLEAR
-            return true
-        }
-        GAME.setup_boss_stage()
         return true
     }
 

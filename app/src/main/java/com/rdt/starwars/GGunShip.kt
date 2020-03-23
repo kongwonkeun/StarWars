@@ -36,7 +36,7 @@ class GGunShip(val GAME: GView, var x: Int, var y: Int) {
         y = GAME.m_height - GConfig.GUNSHIP_Y
         shield = 3
         dead = false
-        undead_time = 50
+        undead_time = GConfig.GUNSHIP_UNDEAD_TIME
         undead = true
         dir = GShip.STOP.i
         img = img_pool[0]!!
@@ -67,6 +67,31 @@ class GGunShip(val GAME: GView, var x: Int, var y: Int) {
             dir = GShip.STOP.i
         }
         return (y < -32)
+    }
+
+    fun check_clear(): Boolean {
+        if (GAME.stage.enemy_cnt > 0 || GAME.exp.size > 1) {
+            return true
+        }
+        if (GAME.stage_num % GConfig.BOSS_COUNT > 0) {
+            GAME.status = GGameStatus.STAGE_CLEAR
+            return true
+        }
+        if (GAME.boss.shield[GBossPart.CENTER.i] > 0) {
+            return true
+        }
+        if (GAME.boss.shield[GBossPart.CENTER.i] < 0) {
+            GAME.status = GGameStatus.STAGE_CLEAR
+            GAME.boss.y = -60
+            GAME.killed_boss++
+            GAME.is_boss = false
+            GAME.boss.shield[GBossPart.CENTER.i] = 0
+            return true
+        }
+        if (GAME.killed_boss < GConfig.STAGE_COUNT / GConfig.BOSS_COUNT) {
+            GAME.setup_boss_stage()
+        }
+        return true
     }
 
 }

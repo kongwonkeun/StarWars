@@ -103,11 +103,6 @@ class GStage(val GAME: GView) {
         }
 
         fun get_path(id: Int): GEnemyPath {
-            //---- kong ----
-            //val sz = path.size
-            //Log.d("TAG", "---- sz = $sz ----")
-            //Log.d("TAG", "---- id = $id ----")
-            //----
             return path[id]
         }
 
@@ -213,10 +208,7 @@ class GStage(val GAME: GView) {
             val w = GConfig.ENEMY_WIDTH
             val h = GConfig.ENEMY_HEIGHT
             val top = GConfig.ENEMY_POSITION_TOP
-            //---- kong ----
-            //val left = GConfig.ENEMY_POSITION_LEFT
             val left = GAME.m_width/2 - w*GConfig.ENEMY_COLUMN/2
-            //----
 
                     for (i in 0 until GConfig.ENEMY_ROW) {
                 if (i <= 1) {

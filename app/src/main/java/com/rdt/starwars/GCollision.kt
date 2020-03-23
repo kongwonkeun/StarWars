@@ -170,7 +170,7 @@ class GCollision(val GAME: GView) {
                 }
                 4 -> { GAME.gunship.shield = 6 }
                 5 -> {
-                    GAME.gunship.undead_time = 100
+                    GAME.gunship.undead_time = GConfig.GUNSHIP_UNDEAD_TIME*2
                     GAME.gunship.undead = true
                 }
                 6 -> {

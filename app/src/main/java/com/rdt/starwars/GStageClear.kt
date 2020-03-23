@@ -8,7 +8,7 @@ class GStageClear(val GAME: GView) {
 
     private val img_msg = BitmapFactory.decodeResource(GAME.m_ctx.resources, R.drawable.msg_clear)
     private val w = img_msg.width
-    private val x = (GAME.m_width - w)/2
+    private var x = (GAME.m_width - w)/2
     private val y = 300
     private var loop = 0
 
@@ -28,6 +28,8 @@ class GStageClear(val GAME: GView) {
         val x_ = GAME.gunship.x
         val y_ = GAME.gunship.y
         canvas.drawBitmap(GAME.gunship.img, (x_ - w_).toFloat(), (y_ - h_).toFloat(), null)
+
+        x = (GAME.m_width - w)/2
 
         loop++
         if (loop%12/6 == 0) {

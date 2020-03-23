@@ -138,6 +138,7 @@ class FragGame : Fragment(), ServiceConnection, BTCallback {
     var d_last_: Int = 0
     var dir_: Int = 0
     var speed_: Int = 0
+    var delay_: Int = 0
 
     private fun state_machine(b: Int) {
         if (b == 86) {
@@ -187,8 +188,13 @@ class FragGame : Fragment(), ServiceConnection, BTCallback {
             }
         }
         if (s_ == 6) {
+            delay_++
             speed_ = v_
-            //GView.xwing.fire_5_()
+            if (delay_%6 == 0) {
+                synchronized(v_game.m_holder) {
+                    v_game.m_thread.fire_3()
+                }
+            }
             //status("speed = $speed_")
             return
         }
@@ -201,7 +207,7 @@ class FragGame : Fragment(), ServiceConnection, BTCallback {
                 } else {
                     dir_ = 0
                 }
-                //GView.xwing.start_move_(dir_)
+                //
                 //status("dir = $dir_")
                 return
             }

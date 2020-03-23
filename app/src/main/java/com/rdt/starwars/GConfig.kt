@@ -16,6 +16,7 @@ class GConfig {
         val SYNC_ENEMY_COLUMN = 0
 
         val GUNSHIP_Y = 72
+        val GUNSHIP_UNDEAD_TIME = 500
         val GUNSHIP_COUNT = 30
 
         val BOSS_EASY = 5
