@@ -54,6 +54,11 @@ class GStageClear(val GAME: GView) {
         GAME.bonus.clear()
 
         GAME.stage_num++
+        when (GAME.stage_num) {
+            3 -> GAME.killed_boss = 0
+            6 -> GAME.killed_boss = 1
+            else -> {}
+        }
 
         if (GAME.stage_num > GConfig.STAGE_COUNT) {
             GAME.status = GGameStatus.ALL_CLEAR

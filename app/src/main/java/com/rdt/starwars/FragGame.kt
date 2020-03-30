@@ -9,6 +9,7 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.text.method.ScrollingMovementMethod
+import android.util.Range
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -191,8 +192,12 @@ class FragGame : Fragment(), ServiceConnection, BTCallback {
             delay_++
             speed_ = v_
             if (delay_%6 == 0) {
-                synchronized(v_game.m_holder) {
-                    v_game.m_thread.fire_3()
+                synchronized(v_game.m_holder) { //---- kong ----
+                    when {
+                        speed_ < 1 -> v_game.m_thread.fire()
+                        speed_ in 1..400 -> v_game.m_thread.fire_3()
+                        else -> v_game.m_thread.fire_5() // larger than 400
+                    }
                 }
             }
             //status("speed = $speed_")
@@ -207,7 +212,14 @@ class FragGame : Fragment(), ServiceConnection, BTCallback {
                 } else {
                     dir_ = 0
                 }
-                //
+                synchronized(v_game.m_holder) { //---- kong ----
+                    when (dir_) {
+                        -1 -> v_game.gunship.dir = GShip.LEFT.i
+                         1 -> v_game.gunship.dir = GShip.RIGHT.i
+                         0 -> v_game.gunship.dir = GShip.STOP.i
+                        else -> {}
+                    }
+                }
                 //status("dir = $dir_")
                 return
             }

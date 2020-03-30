@@ -84,11 +84,11 @@ class GGunShip(val GAME: GView, var x: Int, var y: Int) {
             GAME.status = GGameStatus.STAGE_CLEAR
             GAME.boss.y = -60
             GAME.killed_boss++
-            GAME.is_boss = false
             GAME.boss.shield[GBossPart.CENTER.i] = 0
+            GAME.is_boss = false
             return true
         }
-        if (GAME.killed_boss < GConfig.STAGE_COUNT / GConfig.BOSS_COUNT) {
+        if (!GAME.is_boss && GAME.killed_boss < GConfig.STAGE_COUNT / GConfig.BOSS_COUNT) {
             GAME.setup_boss_stage()
         }
         return true
